@@ -55,22 +55,6 @@ pub trait TiredClub {
         self.user_staked_second_collection(&caller).insert(nonce);
     }
 
-    #[payable("*")]
-    #[endpoint(airdropSecond)]
-    #[only_owner]
-    fn airdrop_second(&self,
-        #[payment_token] payment_token: EgldOrEsdtTokenIdentifier,
-        #[payment_nonce] nonce: u64,
-        user: ManagedAddress) {
-        
-        let second_collection_token = self.second_collection_token().get();
-
-        require!(payment_token == second_collection_token, "Invalid NFT input, {} expected", second_collection_token);
-
-        self.users_staked_second_collection().insert(user.clone());
-        self.user_staked_second_collection(&user).insert(nonce);
-    }
-
 /*
     STAKE CLOSE AFTER DEADLINE
     --init--
