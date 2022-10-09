@@ -5,7 +5,9 @@ elrond_wasm::derive_imports!();
 const YEAR_IN_SECONDS: u64 = 60 * 60 * 24 * 365;
 const PERCENTAGE: u32 = 100;
 
-const UNBOND_EPOCHS: u64 = 6;
+const UNBOND_DAYS: u64 = 6;
+//const DAY_IN_SECONDS: u64 = 60 * 60 * 24;
+const DAY_IN_SECONDS: u64 = 60 * 2; // 2 minutes for testing
 
 #[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, PartialEq, Debug)]
 pub struct UnstakingPosition {
@@ -17,12 +19,8 @@ pub struct UnstakingPosition {
 pub trait TiredClub {
     #[init]
     fn init(
-        &self,
-        first_collection_token: EgldOrEsdtTokenIdentifier,
-        second_collection_token: EgldOrEsdtTokenIdentifier
+        &self
     ) {
-        self.first_collection_token().set(first_collection_token);
-        self.second_collection_token().set(second_collection_token);
     }
 
     #[payable("*")]
@@ -53,6 +51,22 @@ pub trait TiredClub {
 
         self.users_staked_second_collection().insert(caller.clone());
         self.user_staked_second_collection(&caller).insert(nonce);
+    }
+    
+    #[endpoint(unstakeFirst)]
+    fn unstake_first(&self, nonce: u64) {
+        let caller = self.blockchain().get_caller();
+
+        let is_nonce_staked = self.user_staked_first_collection(&caller).swap_remove(&nonce);
+        require!(!is_nonce_staked, "NFT was not staked");
+
+        let unstaking_position = UnstakingPosition {
+            nonce,
+            deadline: self.blockchain().get_block_timestamp() + UNBOND_DAYS * DAY_IN_SECONDS,
+        };
+
+        self.user_unstaked_first_collection(&caller).insert(unstaking_position);
+        self.number_unstaked_first_collection().update(|number| *number += 1);
     }
 
 /*
@@ -98,9 +112,13 @@ pub trait TiredClub {
     #[storage_mapper("userStakedFirstCollection")]
     fn user_staked_first_collection(&self, user: &ManagedAddress) -> UnorderedSetMapper<u64>;
 
-    #[view(getUserUntakedFirstCollection)]
+    #[view(getUserUnstakedFirstCollection)]
     #[storage_mapper("userUnstakedFirstCollection")]
     fn user_unstaked_first_collection(&self, user: &ManagedAddress) -> UnorderedSetMapper<UnstakingPosition>;
+
+    #[view(getNumberUnstakedFirstCollection)]
+    #[storage_mapper("numberUnstakedFirstCollection")]
+    fn number_unstaked_first_collection(&self) -> SingleValueMapper<u32>;
 
     /*
         SECOND COLLECTION - TASC

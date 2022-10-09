@@ -7,14 +7,15 @@
 elrond_wasm_node::wasm_endpoints! {
     tiredclub
     (
-        airdropSecond
+        getNumberUnstakedFirstCollection
         getUserStakedFirstCollection
         getUserStakedSecondCollection
-        getUserUntakedFirstCollection
+        getUserUnstakedFirstCollection
         getUsersStakedFirstCollection
         getUsersStakedSecondCollection
         stakeFirst
         stakeSecond
+        unstakeFirst
     )
 }
 
