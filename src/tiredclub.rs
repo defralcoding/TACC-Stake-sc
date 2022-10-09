@@ -56,15 +56,6 @@ pub trait TiredClub {
     }
 
 /*
-    STAKE CLOSE AFTER DEADLINE
-    --init--
-    self.deadline_stake_first_collection().set(&deadline);
-    --stake--
-    let current_time = self.blockchain().get_block_timestamp();
-    require!(current_time < self.deadline_stake_first_collection().get(), "Stake is closed for {}", first_collection_token);
-*/
-
-/*
     #[endpoint(unstake)]
     fn unstake(&self, unstake_amount: BigUint) {
         let caller = self.blockchain().get_caller();
@@ -110,9 +101,6 @@ pub trait TiredClub {
     #[view(getUserUntakedFirstCollection)]
     #[storage_mapper("userUnstakedFirstCollection")]
     fn user_unstaked_first_collection(&self, user: &ManagedAddress) -> UnorderedSetMapper<UnstakingPosition>;
-
-    #[storage_mapper("deadlineStakeFirstCollection")]
-    fn deadline_stake_first_collection(&self) -> SingleValueMapper<u64>;
 
     /*
         SECOND COLLECTION - TASC
