@@ -12,7 +12,10 @@ path = "src/tiredclub.rs"
 num-bigint = "0.4.2"
 
 [dependencies.elrond-wasm]
-version = "0.33.1"
+version = "0.34.1"
+
+[dependencies.elrond-wasm-modules]
+version = "0.34.0"
 
 [dev-dependencies.elrond-wasm-debug]
-version = "0.33.1"
+version = "0.34.1"

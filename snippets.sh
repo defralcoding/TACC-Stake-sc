@@ -1,6 +1,6 @@
 USER_PEM="~/wallets/development.pem"
-PROXY="https://devnet-gateway.elrond.com"
-CHAIN_ID="D"
+PROXY="https://gateway.elrond.com"
+CHAIN_ID="1"
 
 deploy() {
     erdpy --verbose contract deploy --project=${PROJECT} \
@@ -34,14 +34,20 @@ getUsersStaked() {
 }
 
 getNumberUnstaked() {
-    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt \
+    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
     --function "getNumberUnstakedFirstCollection" \
+    --proxy=${PROXY} || return
+}
+
+getNumberUnstakedSecond() {
+    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
+    --function "getNumberUnstakedSecondCollection" \
     --proxy=${PROXY} || return
 }
 
 getUserStaked_second() {
     erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
-    --function "getUserStakedSecondCollection" --arguments erd1xhxylx0rjefy578hkje5rg9xzlxweq07frprzujgvd0cxant2wnqte3jfs \
+    --function "getUserStakedSecondCollection" --arguments erd1jgw6rjlmnk0g3mpdjnuyd0t07ff5an5fnv9xt6nkl79u2yewcngqcy9zls \
     --proxy=${PROXY} || return
 }
 
@@ -62,8 +68,7 @@ upgrade() {
 upgrade_mainnet() {
     erdpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h --project=${PROJECT} \
     --recall-nonce --pem="~/wallets/TiredApeClub.pem" \
-    --gas-limit=40000000 \
-    --arguments str:TACC-73857e str:TIREDCLUB-b8cfb8 \
+    --gas-limit=30000000 \
     --send --outfile="deploy.interaction.json" \
     --proxy="https://gateway.elrond.com" --chain=1 || return
 }

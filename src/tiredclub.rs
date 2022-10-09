@@ -2,9 +2,6 @@
 elrond_wasm::imports!();
 elrond_wasm::derive_imports!();
 
-const YEAR_IN_SECONDS: u64 = 60 * 60 * 24 * 365;
-const PERCENTAGE: u32 = 100;
-
 const UNBOND_DAYS: u64 = 6;
 const DAY_IN_SECONDS: u64 = 60 * 60 * 24;
 
@@ -15,7 +12,7 @@ pub struct UnstakingPosition {
 }
 
 #[elrond_wasm::contract]
-pub trait TiredClub {
+pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
     #[init]
     fn init(
         &self

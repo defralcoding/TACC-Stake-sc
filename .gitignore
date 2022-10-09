@@ -7,3 +7,6 @@
 **/*.interaction.json
 # added
 **/target/**
+Cargo.lock
+meta/Cargo.lock
+wasm/Cargo.lock
