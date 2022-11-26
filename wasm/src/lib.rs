@@ -7,19 +7,35 @@
 elrond_wasm_node::wasm_endpoints! {
     tiredclub
     (
+        claimRewards
+        distributeRoyaltiesFirstCollection
+        distributeRoyaltiesSecondCollection
         dnsRegister
+        getNumberOlympianStakedSecondCollection
+        getNumberStakedFirstCollection
+        getNumberStakedSecondCollection
         getNumberUnstakedFirstCollection
         getNumberUnstakedSecondCollection
         getUserStakedFirstCollection
+        getUserStakedOlympianSecondCollection
         getUserStakedSecondCollection
         getUserUnstakedFirstCollection
         getUserUnstakedSecondCollection
         getUsersStakedFirstCollection
         getUsersStakedSecondCollection
+        setTaccRoyaltiesSecondCollection
+        setTascRoyaltiesSecondCollection
+        setTeamAddresses
+        setTeamRoyaltiesSecondCollection
         stakeFirst
         stakeSecond
+        taccRoyaltiesSecondCollection
+        tascRoyaltiesSecondCollection
+        teamAddresses
+        teamRoyaltiesSecondCollection
         unstakeFirst
         unstakeSecond
+        userRewards
         withdrawFirst
         withdrawSecond
     )
