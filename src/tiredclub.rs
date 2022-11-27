@@ -39,11 +39,32 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
 
         require!(payment_token == first_collection_token, "Invalid NFT input, {} expected", first_collection_token);
 
-        self.users_staked_first_collection().insert(caller.clone());
-        self.user_staked_first_collection(&caller).insert(nonce);
-        self.number_staked_first_collection().update(|number| *number += 1);
+        self.stake_first_internal(caller, nonce)
     }
     
+    #[payable("*")]
+    #[endpoint(stakeMultipleFirst)]
+    fn stake_multiple_first(&self,
+        #[payment_multi] payments: ManagedVec<EsdtTokenPayment<Self::Api>>) {
+        
+        let caller = self.blockchain().get_caller();
+        let first_collection_token = self.first_collection_token().get();
+
+        for payment in &payments {
+            let token_payment = EgldOrEsdtTokenPayment::from(payment);
+
+            require!(token_payment.token_identifier == first_collection_token, "Invalid NFT input, {} expected", first_collection_token);
+
+            self.stake_first_internal(caller.clone(), token_payment.token_nonce);
+        }
+    }
+
+    fn stake_first_internal(&self, user: ManagedAddress, nonce: u64) {
+        self.users_staked_first_collection().insert(user.clone());
+        self.user_staked_first_collection(&user).insert(nonce);
+        self.number_staked_first_collection().update(|number| *number += 1);
+    }
+
     #[endpoint(unstakeFirst)]
     fn unstake_first(&self, nonce: u64) {
         let caller = self.blockchain().get_caller();
@@ -84,6 +105,26 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
         //send NFT back to user
         let first_collection_token = self.first_collection_token().get();
         self.send().direct(&caller, &first_collection_token, nonce, &BigUint::from(1u32));
+    }
+    
+    #[endpoint(cancelUnstakeFirst)]
+    fn cancel_unstake_first(&self, nonce: u64) {
+        let caller = self.blockchain().get_caller();
+
+        //get unstaking position
+        let user_unstaked = self.user_unstaked_first_collection(&caller);
+        let mut user_unstaked_iter = user_unstaked.iter();
+        let unstaking_position = user_unstaked_iter.find(|position| position.nonce == nonce);
+        
+        //check if NFT was already unstaked
+        require!(unstaking_position.is_some(), "NFT needs to be unstaked first");
+        
+        //update storage
+        self.user_unstaked_first_collection(&caller).swap_remove(&unstaking_position.unwrap());
+        self.number_unstaked_first_collection().update(|number| *number -= 1);
+
+        //get NFT back to stake
+        self.stake_first_internal(caller, nonce);
     }
 
     #[payable("EGLD")]
@@ -262,14 +303,35 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
 
         require!(payment_token == second_collection_token, "Invalid NFT input, {} expected", second_collection_token);
 
-        self.users_staked_second_collection().insert(caller.clone());
-        self.user_staked_second_collection(&caller).insert(nonce);
+        self.stake_second_internal(caller, nonce);
+    }
+
+    #[payable("*")]
+    #[endpoint(stakeMultipleSecond)]
+    fn stake_multiple_second(&self,
+        #[payment_multi] payments: ManagedVec<EsdtTokenPayment<Self::Api>>) {
+        
+        let caller = self.blockchain().get_caller();
+        let second_collection_token = self.second_collection_token().get();
+
+        for payment in &payments {
+            let token_payment = EgldOrEsdtTokenPayment::from(payment);
+
+            require!(token_payment.token_identifier == second_collection_token, "Invalid NFT input, {} expected", second_collection_token);
+
+            self.stake_second_internal(caller.clone(), token_payment.token_nonce);
+        }
+    }
+
+    fn stake_second_internal(&self, user: ManagedAddress, nonce: u64) {
+        self.users_staked_second_collection().insert(user.clone());
+        self.user_staked_second_collection(&user).insert(nonce);
         self.number_staked_second_collection().update(|number| *number += 1);
 
         //check if is olympian
         if self.olympian_nonces().contains(&nonce) {
             self.number_olympian_staked_second_collection().update(|number| *number += 1);
-            self.user_number_staked_olympian_second_collection(&caller).update(|number| *number += 1);
+            self.user_number_staked_olympian_second_collection(&user).update(|number| *number += 1);
         }
     }
 
@@ -319,6 +381,26 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
         //send NFT back to user
         let second_collection_token = self.second_collection_token().get();
         self.send().direct(&caller, &second_collection_token, nonce, &BigUint::from(1u32));
+    }
+    
+    #[endpoint(cancelUnstakeSecond)]
+    fn cancel_unstake_second(&self, nonce: u64) {
+        let caller = self.blockchain().get_caller();
+
+        //get unstaking position
+        let user_unstaked = self.user_unstaked_second_collection(&caller);
+        let mut user_unstaked_iter = user_unstaked.iter();
+        let unstaking_position = user_unstaked_iter.find(|position| position.nonce == nonce);
+        
+        //check if NFT was already unstaked
+        require!(unstaking_position.is_some(), "NFT needs to be unstaked first");
+        
+        //update storage
+        self.user_unstaked_second_collection(&caller).swap_remove(&unstaking_position.unwrap());
+        self.number_unstaked_second_collection().update(|number| *number -= 1);
+
+        //get NFT back to stake
+        self.stake_second_internal(caller, nonce);
     }
 
     #[storage_mapper("stakingSecondCollectionIdentifier")]

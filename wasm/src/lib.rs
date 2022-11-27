@@ -7,6 +7,8 @@
 elrond_wasm_node::wasm_endpoints! {
     tiredclub
     (
+        cancelUnstakeFirst
+        cancelUnstakeSecond
         claimRewards
         distributeRoyaltiesFirstCollection
         distributeRoyaltiesSecondCollection
@@ -28,6 +30,8 @@ elrond_wasm_node::wasm_endpoints! {
         setTeamAddresses
         setTeamRoyaltiesSecondCollection
         stakeFirst
+        stakeMultipleFirst
+        stakeMultipleSecond
         stakeSecond
         taccRoyaltiesSecondCollection
         tascRoyaltiesSecondCollection
