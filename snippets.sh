@@ -1,4 +1,4 @@
-USER_PEM="~/wallets/development.pem"
+USER_PEM="~/wallets/TiredClub.pem"
 PROXY="https://gateway.elrond.com"
 CHAIN_ID="1"
 
@@ -44,9 +44,14 @@ getUserStaked_second() {
 
 
 
-numberStakedFirstCollection() {
-    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt \
-    --function "numberStakedFirstCollection" \
+getNumberStakedFirstCollection() {
+    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
+    --function "getNumberStakedFirstCollection" \
+    --proxy=${PROXY} || return
+}
+getNumberStakedSecondCollection() {
+    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
+    --function "getNumberStakedSecondCollection" \
     --proxy=${PROXY} || return
 }
 
@@ -80,7 +85,7 @@ getgenerico() {
 
 
 upgrade() {
-    erdpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt --project=${PROJECT} \
+    erdpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h --project=${PROJECT} \
     --recall-nonce --pem=${USER_PEM} \
     --gas-limit=60000000 \
     --send --outfile="deploy.interaction.json" \

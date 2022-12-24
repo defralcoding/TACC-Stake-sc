@@ -25,6 +25,21 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
     ) {
     }
 
+    #[only_owner]
+    #[endpoint(cleanHolders)]
+    fn clean_holders(&self) {
+        for user in self.users_staked_first_collection().iter() {
+            if self.user_staked_first_collection(&user).len() == 0 {
+                self.users_staked_first_collection().swap_remove(&user);
+            }
+        }
+        for user in self.users_staked_second_collection().iter() {
+            if self.user_staked_second_collection(&user).len() == 0 {
+                self.users_staked_second_collection().swap_remove(&user);
+            }
+        }
+    }
+
     /*
         ***** FIRST COLLECTION - TACC *****
     */
@@ -105,6 +120,11 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
         //send NFT back to user
         let first_collection_token = self.first_collection_token().get();
         self.send().direct(&caller, &first_collection_token, nonce, &BigUint::from(1u32));
+
+        //check if user has no more NFTs staked
+        if self.user_staked_first_collection(&caller).len() == 0 {
+            self.users_staked_first_collection().swap_remove(&caller);
+        }
     }
     
     #[endpoint(cancelUnstakeFirst)]
@@ -381,6 +401,11 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
         //send NFT back to user
         let second_collection_token = self.second_collection_token().get();
         self.send().direct(&caller, &second_collection_token, nonce, &BigUint::from(1u32));
+        
+        //check if user has no more NFTs staked
+        if self.user_staked_second_collection(&caller).len() == 0 {
+            self.users_staked_second_collection().swap_remove(&caller);
+        }
     }
     
     #[endpoint(cancelUnstakeSecond)]
