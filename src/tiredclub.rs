@@ -25,38 +25,6 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
     ) {
     }
 
-    #[only_owner]
-    #[endpoint(cleanHoldersFirst)]
-    fn clean_holders_first(&self) {
-        let mut holdersToRemove: ManagedVec<ManagedAddress> = ManagedVec::new();
-
-        for user in self.users_staked_first_collection().iter() {
-            if self.user_staked_first_collection(&user).len() == 0 {
-                holdersToRemove.push(user);
-            }
-        }
-
-        for user in holdersToRemove.iter() {
-            self.users_staked_first_collection().swap_remove(&user);
-        }
-    }
-
-    #[only_owner]
-    #[endpoint(cleanHoldersSecond)]
-    fn clean_holders_second(&self) {
-        let mut holdersToRemove: ManagedVec<ManagedAddress> = ManagedVec::new();
-
-        for user in self.users_staked_second_collection().iter() {
-            if self.user_staked_second_collection(&user).len() == 0 {
-                holdersToRemove.push(user);
-            }
-        }
-
-        for user in holdersToRemove.iter() {
-            self.users_staked_second_collection().swap_remove(&user);
-        }
-    }
-
     /*
         ***** FIRST COLLECTION - TACC *****
     */
