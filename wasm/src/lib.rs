@@ -10,7 +10,8 @@ elrond_wasm_node::wasm_endpoints! {
         cancelUnstakeFirst
         cancelUnstakeSecond
         claimRewards
-        cleanHolders
+        cleanHoldersFirst
+        cleanHoldersSecond
         distributeRoyaltiesFirstCollection
         distributeRoyaltiesSecondCollection
         dnsRegister
