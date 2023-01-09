@@ -263,7 +263,9 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
         &self,
         team_addresses: MultiValueEncoded<MultiValue2<ManagedAddress, u16>>,
     ) {
-        self.team_addresses().clear();
+        if self.team_addresses().len() > 0 {
+            self.team_addresses().clear();
+        }
         for team_address in team_addresses {
             let (address, percent) = team_address.into_tuple();
             let team_member = TeamMember {

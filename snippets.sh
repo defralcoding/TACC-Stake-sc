@@ -1,5 +1,5 @@
 USER_PEM="~/wallets/development.pem"
-PROXY="https://devnet-gateway.elrond.com"
+PROXY="https://gateway.elrond.com"
 CHAIN_ID="D"
 
 deploy() {
@@ -77,8 +77,8 @@ getUserRewards() {
 
 
 getgenerico() {
-    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt \
-    --function "getUsersStakedFirstCollection" \
+    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
+    --function "teamAddresses" \
     --proxy=${PROXY} || return
 }
 
