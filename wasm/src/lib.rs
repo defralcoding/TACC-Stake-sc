@@ -10,6 +10,7 @@ elrond_wasm_node::wasm_endpoints! {
         cancelUnstakeFirst
         cancelUnstakeSecond
         claimRewards
+        createProposal
         distributeRoyaltiesFirstCollection
         distributeRoyaltiesSecondCollection
         dnsRegister
@@ -18,13 +19,20 @@ elrond_wasm_node::wasm_endpoints! {
         getNumberStakedSecondCollection
         getNumberUnstakedFirstCollection
         getNumberUnstakedSecondCollection
+        getProposalById
+        getProposals
         getUserStakedFirstCollection
         getUserStakedOlympianSecondCollection
         getUserStakedSecondCollection
         getUserUnstakedFirstCollection
         getUserUnstakedSecondCollection
+        getUserVote
         getUsersStakedFirstCollection
         getUsersStakedSecondCollection
+        getVoteTotal
+        getVotedPower
+        getVotingPowerTotal
+        getVotingPowers
         setTaccRoyaltiesSecondCollection
         setTascRoyaltiesSecondCollection
         setTeamAddresses
@@ -40,6 +48,7 @@ elrond_wasm_node::wasm_endpoints! {
         unstakeFirst
         unstakeSecond
         userRewards
+        vote
         withdrawFirst
         withdrawSecond
     )

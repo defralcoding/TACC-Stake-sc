@@ -1,6 +1,6 @@
-USER_PEM="~/wallets/TiredClub.pem"
-PROXY="https://gateway.elrond.com"
-CHAIN_ID="1"
+USER_PEM="~/wallets/development.pem"
+PROXY="https://devnet-gateway.elrond.com"
+CHAIN_ID="D"
 
 deploy() {
     erdpy --verbose contract deploy --project=${PROJECT} \
@@ -77,17 +77,17 @@ getUserRewards() {
 
 
 getgenerico() {
-    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
-    --function "getUserStakedOlympianSecondCollection" --arguments erd1292taguq6hvu370g28wnyvy0hlnze2gfwdcdgd8t0ht35tnh8e5qrwsjqx \
+    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt \
+    --function "getUsersStakedFirstCollection" \
     --proxy=${PROXY} || return
 }
 
 
 
 upgrade() {
-    erdpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h --project=${PROJECT} \
+    erdpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt --project=${PROJECT} \
     --recall-nonce --pem=${USER_PEM} \
-    --gas-limit=60000000 \
+    --gas-limit=80000000 \
     --send --outfile="deploy.interaction.json" \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
@@ -95,7 +95,7 @@ upgrade() {
 upgrade_mainnet() {
     erdpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h --project=${PROJECT} \
     --recall-nonce --pem="~/wallets/TiredClub.pem" \
-    --gas-limit=60000000 \
+    --gas-limit=80000000 \
     --send --outfile="deploy.interaction.json" \
     --proxy="https://gateway.elrond.com" --chain=1 || return
 }

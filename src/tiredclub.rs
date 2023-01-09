@@ -3,9 +3,11 @@ elrond_wasm::imports!();
 elrond_wasm::derive_imports!();
 
 const UNBOND_DAYS: u64 = 6;
-const DAY_IN_SECONDS: u64 = 60 * 60 * 24;
+const HOUR_IN_SECONDS: u64 = 60 * 60;
+const DAY_IN_SECONDS: u64 = 24 * HOUR_IN_SECONDS;
 
 pub mod dao;
+pub mod storage;
 
 #[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, PartialEq, Debug)]
 pub struct UnstakingPosition {
@@ -16,11 +18,11 @@ pub struct UnstakingPosition {
 #[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, PartialEq, Debug)]
 pub struct TeamMember<M: ManagedTypeApi> {
     pub address: ManagedAddress<M>,
-    pub percent: u8,
+    pub percent: u16,
 }
 
 #[elrond_wasm::contract]
-pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
+pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::Storage {
     #[init]
     fn init(&self) {}
 
@@ -169,38 +171,36 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
     #[endpoint(distributeRoyaltiesFirstCollection)]
     #[only_owner]
     fn distribute_royalties_first_collection(&self, #[payment_amount] payment_amount: BigUint) {
-        self.distribute_to_tasc_stakers(&payment_amount);
+        self.distribute_to_team(&payment_amount);
     }
 
     #[payable("EGLD")]
     #[endpoint(distributeRoyaltiesSecondCollection)]
     #[only_owner]
     fn distribute_royalties_second_collection(&self, #[payment_amount] payment_amount: BigUint) {
-        /*
-                let team_royalties_second_collection = self.team_royalties_second_collection().get();
-                let team_amount = &payment_amount * &BigUint::from(team_royalties_second_collection) / &BigUint::from(100u8);
-        */
-        let tasc_royalties_second_collection = self.tasc_royalties_second_collection().get();
-        let tasc_amount = &payment_amount * &BigUint::from(tasc_royalties_second_collection)
+        let team_royalties_second_collection = self.team_royalties_second_collection().get();
+        let team_amount = &payment_amount * &BigUint::from(team_royalties_second_collection)
             / &BigUint::from(100u8);
 
-        let tacc_amount = payment_amount /* - &team_amount */ - &tasc_amount;
+        /*
+                let tasc_royalties_second_collection = self.tasc_royalties_second_collection().get();
+                let tasc_amount = &payment_amount * &BigUint::from(tasc_royalties_second_collection)
+                    / &BigUint::from(100u8);
+        */
 
-        //self.distribute_to_team(&team_amount);
-        self.distribute_to_tasc_stakers(&tasc_amount);
+        let tacc_amount = payment_amount - &team_amount /* - &tasc_amount */;
+
+        self.distribute_to_team(&team_amount);
+        //self.distribute_to_tasc_stakers(&tasc_amount);
         self.distribute_to_tacc_stakers(&tacc_amount);
     }
 
     fn distribute_to_team(&self, amount: &BigUint) {
         for team_member in self.team_addresses().iter() {
             let member_amount =
-                amount * &BigUint::from(team_member.percent) / &BigUint::from(100u8);
-            self.send().direct(
-                &team_member.address,
-                &EgldOrEsdtTokenIdentifier::egld(),
-                0,
-                &member_amount,
-            );
+                amount * &BigUint::from(team_member.percent) / &BigUint::from(1000u16);
+            self.user_rewards(&team_member.address)
+                .update(|rewards| *rewards += member_amount);
         }
     }
 
@@ -257,19 +257,11 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
             .direct(&caller, &EgldOrEsdtTokenIdentifier::egld(), 0, &rewards);
     }
 
-    #[view(userRewards)]
-    #[storage_mapper("userRewards")]
-    fn user_rewards(&self, user: &ManagedAddress) -> SingleValueMapper<BigUint>;
-
-    #[view(teamAddresses)]
-    #[storage_mapper("teamAddresses")]
-    fn team_addresses(&self) -> UnorderedSetMapper<TeamMember<Self::Api>>;
-
     #[only_owner]
     #[endpoint(setTeamAddresses)]
     fn set_team_addresses(
         &self,
-        team_addresses: MultiValueEncoded<MultiValue2<ManagedAddress, u8>>,
+        team_addresses: MultiValueEncoded<MultiValue2<ManagedAddress, u16>>,
     ) {
         self.team_addresses().clear();
         for team_address in team_addresses {
@@ -281,18 +273,6 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
             self.team_addresses().insert(team_member);
         }
     }
-
-    #[view(teamRoyaltiesSecondCollection)]
-    #[storage_mapper("teamRoyaltiesSecondCollection")]
-    fn team_royalties_second_collection(&self) -> SingleValueMapper<u8>;
-
-    #[view(taccRoyaltiesSecondCollection)]
-    #[storage_mapper("taccRoyaltiesSecondCollection")]
-    fn tacc_royalties_second_collection(&self) -> SingleValueMapper<u8>;
-
-    #[view(tascRoyaltiesSecondCollection)]
-    #[storage_mapper("tascRoyaltiesSecondCollection")]
-    fn tasc_royalties_second_collection(&self) -> SingleValueMapper<u8>;
 
     #[only_owner]
     #[endpoint(setTeamRoyaltiesSecondCollection)]
@@ -311,32 +291,6 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
     fn set_tasc_royalties_second_collection(&self, r: u8) {
         self.tasc_royalties_second_collection().set(r);
     }
-
-    #[storage_mapper("stakingFirstCollectionIdentifier")]
-    fn first_collection_token(&self) -> SingleValueMapper<EgldOrEsdtTokenIdentifier>;
-
-    #[view(getNumberStakedFirstCollection)]
-    #[storage_mapper("numberStakedFirstCollection")]
-    fn number_staked_first_collection(&self) -> SingleValueMapper<u32>;
-
-    #[view(getUsersStakedFirstCollection)]
-    #[storage_mapper("usersStakedFirstCollection")]
-    fn users_staked_first_collection(&self) -> UnorderedSetMapper<ManagedAddress>;
-
-    #[view(getUserStakedFirstCollection)]
-    #[storage_mapper("userStakedFirstCollection")]
-    fn user_staked_first_collection(&self, user: &ManagedAddress) -> UnorderedSetMapper<u64>;
-
-    #[view(getUserUnstakedFirstCollection)]
-    #[storage_mapper("userUnstakedFirstCollection")]
-    fn user_unstaked_first_collection(
-        &self,
-        user: &ManagedAddress,
-    ) -> UnorderedSetMapper<UnstakingPosition>;
-
-    #[view(getNumberUnstakedFirstCollection)]
-    #[storage_mapper("numberUnstakedFirstCollection")]
-    fn number_unstaked_first_collection(&self) -> SingleValueMapper<u32>;
 
     /*
      ***** SECOND COLLECTION - TASC *****
@@ -495,44 +449,4 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule {
         //get NFT back to stake
         self.stake_second_internal(caller, nonce);
     }
-
-    #[storage_mapper("stakingSecondCollectionIdentifier")]
-    fn second_collection_token(&self) -> SingleValueMapper<EgldOrEsdtTokenIdentifier>;
-
-    #[view(getNumberStakedSecondCollection)]
-    #[storage_mapper("numberStakedSecondCollection")]
-    fn number_staked_second_collection(&self) -> SingleValueMapper<u32>;
-
-    #[view(getNumberOlympianStakedSecondCollection)]
-    #[storage_mapper("numberOlympianStakedSecondCollection")]
-    fn number_olympian_staked_second_collection(&self) -> SingleValueMapper<u32>;
-
-    #[view(getUsersStakedSecondCollection)]
-    #[storage_mapper("usersStakedSecondCollection")]
-    fn users_staked_second_collection(&self) -> UnorderedSetMapper<ManagedAddress>;
-
-    #[view(getUserStakedSecondCollection)]
-    #[storage_mapper("userStakedSecondCollection")]
-    fn user_staked_second_collection(&self, user: &ManagedAddress) -> UnorderedSetMapper<u64>;
-
-    #[view(getUserStakedOlympianSecondCollection)]
-    #[storage_mapper("userStakedOlympianSecondCollection")]
-    fn user_number_staked_olympian_second_collection(
-        &self,
-        user: &ManagedAddress,
-    ) -> SingleValueMapper<u32>;
-
-    #[view(getUserUnstakedSecondCollection)]
-    #[storage_mapper("userUnstakedSecondCollection")]
-    fn user_unstaked_second_collection(
-        &self,
-        user: &ManagedAddress,
-    ) -> UnorderedSetMapper<UnstakingPosition>;
-
-    #[view(getNumberUnstakedSecondCollection)]
-    #[storage_mapper("numberUnstakedSecondCollection")]
-    fn number_unstaked_second_collection(&self) -> SingleValueMapper<u32>;
-
-    #[storage_mapper("olympianNonces")]
-    fn olympian_nonces(&self) -> UnorderedSetMapper<u64>;
 }
