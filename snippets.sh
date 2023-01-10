@@ -1,6 +1,6 @@
 USER_PEM="~/wallets/development.pem"
 PROXY="https://gateway.elrond.com"
-CHAIN_ID="D"
+CHAIN_ID="1"
 
 deploy() {
     erdpy --verbose contract deploy --project=${PROJECT} \

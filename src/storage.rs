@@ -14,7 +14,7 @@ pub trait Storage {
     fn user_rewards(&self, user: &ManagedAddress) -> SingleValueMapper<BigUint>;
 
     #[view(teamAddresses)]
-    #[storage_mapper("teamAddresses")]
+    #[storage_mapper("teamWallets")]
     fn team_addresses(&self) -> UnorderedSetMapper<TeamMember<Self::Api>>;
 
     #[view(teamRoyaltiesSecondCollection)]

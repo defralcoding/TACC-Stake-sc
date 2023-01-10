@@ -13,6 +13,8 @@ elrond_wasm_node::wasm_endpoints! {
         createProposal
         distributeRoyaltiesFirstCollection
         distributeRoyaltiesSecondCollection
+        distributeToTacc
+        distributeToTasc
         dnsRegister
         getNumberOlympianStakedSecondCollection
         getNumberStakedFirstCollection

@@ -195,6 +195,20 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
         self.distribute_to_tacc_stakers(&tacc_amount);
     }
 
+    #[payable("EGLD")]
+    #[endpoint(distributeToTacc)]
+    #[only_owner]
+    fn distribute_to_tacc(&self, #[payment_amount] payment_amount: BigUint) {
+        self.distribute_to_tacc_stakers(&payment_amount);
+    }
+
+    #[payable("EGLD")]
+    #[endpoint(distributeToTasc)]
+    #[only_owner]
+    fn distribute_to_tasc(&self, #[payment_amount] payment_amount: BigUint) {
+        self.distribute_to_tasc_stakers(&payment_amount);
+    }
+
     fn distribute_to_team(&self, amount: &BigUint) {
         for team_member in self.team_addresses().iter() {
             let member_amount =
