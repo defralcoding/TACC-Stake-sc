@@ -35,6 +35,7 @@ elrond_wasm_node::wasm_endpoints! {
         getVotedPower
         getVotingPowerTotal
         getVotingPowers
+        migrateWallet
         setTaccRoyaltiesSecondCollection
         setTascRoyaltiesSecondCollection
         setTeamAddresses

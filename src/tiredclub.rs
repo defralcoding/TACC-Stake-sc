@@ -26,6 +26,65 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
     #[init]
     fn init(&self) {}
 
+    #[only_owner]
+    #[endpoint(migrateWallet)]
+    fn migrate_wallet(&self, wallet_from: ManagedAddress, wallet_to: ManagedAddress) {
+        self.user_rewards(&wallet_to).update(|rewards| {
+            *rewards += &self.user_rewards(&wallet_from).get();
+        });
+        self.user_rewards(&wallet_from).clear();
+
+        if self.users_staked_first_collection().contains(&wallet_from) {
+            self.users_staked_first_collection()
+                .insert(wallet_to.clone());
+            self.users_staked_first_collection()
+                .swap_remove(&wallet_from);
+
+            let user_staked_first_collection = self.user_staked_first_collection(&wallet_from);
+            for nonce in user_staked_first_collection.iter() {
+                self.user_staked_first_collection(&wallet_to).insert(nonce);
+            }
+            self.user_staked_first_collection(&wallet_from).clear();
+
+            let user_unstaked_first_collection = self.user_unstaked_first_collection(&wallet_from);
+            for position in user_unstaked_first_collection.iter() {
+                self.user_unstaked_first_collection(&wallet_to)
+                    .insert(position);
+            }
+            self.user_unstaked_first_collection(&wallet_from).clear();
+        }
+
+        if self.users_staked_second_collection().contains(&wallet_from) {
+            self.users_staked_second_collection()
+                .insert(wallet_to.clone());
+            self.users_staked_second_collection()
+                .swap_remove(&wallet_from);
+
+            let user_staked_second_collection = self.user_staked_second_collection(&wallet_from);
+            for nonce in user_staked_second_collection.iter() {
+                self.user_staked_second_collection(&wallet_to).insert(nonce);
+            }
+            self.user_staked_second_collection(&wallet_from).clear();
+
+            let user_unstaked_second_collection =
+                self.user_unstaked_second_collection(&wallet_from);
+            for position in user_unstaked_second_collection.iter() {
+                self.user_unstaked_second_collection(&wallet_to)
+                    .insert(position);
+            }
+            self.user_unstaked_second_collection(&wallet_from).clear();
+
+            self.user_number_staked_olympian_second_collection(&wallet_to)
+                .update(|number| {
+                    *number += &self
+                        .user_number_staked_olympian_second_collection(&wallet_from)
+                        .get();
+                });
+            self.user_number_staked_olympian_second_collection(&wallet_from)
+                .clear();
+        }
+    }
+
     /*
      ***** FIRST COLLECTION - TACC *****
      */
