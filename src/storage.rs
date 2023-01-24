@@ -72,6 +72,10 @@ pub trait Storage {
     #[storage_mapper("numberOlympianStakedSecondCollection")]
     fn number_olympian_staked_second_collection(&self) -> SingleValueMapper<u32>;
 
+    #[view(getNumberLegendaryStakedSecondCollection)]
+    #[storage_mapper("numberLegendaryStakedSecondCollection")]
+    fn number_legendary_staked_second_collection(&self) -> SingleValueMapper<u32>;
+
     #[view(getUsersStakedSecondCollection)]
     #[storage_mapper("usersStakedSecondCollection")]
     fn users_staked_second_collection(&self) -> UnorderedSetMapper<ManagedAddress>;
@@ -83,6 +87,13 @@ pub trait Storage {
     #[view(getUserStakedOlympianSecondCollection)]
     #[storage_mapper("userStakedOlympianSecondCollection")]
     fn user_number_staked_olympian_second_collection(
+        &self,
+        user: &ManagedAddress,
+    ) -> SingleValueMapper<u32>;
+
+    #[view(getUserStakedLegendarySecondCollection)]
+    #[storage_mapper("userStakedLegendarySecondCollection")]
+    fn user_number_staked_legendary_second_collection(
         &self,
         user: &ManagedAddress,
     ) -> SingleValueMapper<u32>;
@@ -100,4 +111,7 @@ pub trait Storage {
 
     #[storage_mapper("olympianNonces")]
     fn olympian_nonces(&self) -> UnorderedSetMapper<u64>;
+
+    #[storage_mapper("legendaryNonces")]
+    fn legendary_nonces(&self) -> UnorderedSetMapper<u64>;
 }

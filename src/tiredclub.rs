@@ -82,6 +82,15 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
                 });
             self.user_number_staked_olympian_second_collection(&wallet_from)
                 .clear();
+
+            self.user_number_staked_legendary_second_collection(&wallet_to)
+                .update(|number| {
+                    *number += &self
+                        .user_number_staked_legendary_second_collection(&wallet_from)
+                        .get();
+                });
+            self.user_number_staked_legendary_second_collection(&wallet_from)
+                .clear();
         }
     }
 
@@ -425,6 +434,14 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
             self.user_number_staked_olympian_second_collection(&user)
                 .update(|number| *number += 1);
         }
+
+        //check if is legendary
+        if self.legendary_nonces().contains(&nonce) {
+            self.number_legendary_staked_second_collection()
+                .update(|number| *number += 1);
+            self.user_number_staked_legendary_second_collection(&user)
+                .update(|number| *number += 1);
+        }
     }
 
     #[endpoint(unstakeSecond)]
@@ -455,6 +472,14 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
             self.number_olympian_staked_second_collection()
                 .update(|number| *number -= 1);
             self.user_number_staked_olympian_second_collection(&caller)
+                .update(|number| *number -= 1);
+        }
+
+        //check if is legendary
+        if self.legendary_nonces().contains(&nonce) {
+            self.number_legendary_staked_second_collection()
+                .update(|number| *number -= 1);
+            self.user_number_staked_legendary_second_collection(&caller)
                 .update(|number| *number -= 1);
         }
     }
