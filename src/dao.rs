@@ -10,9 +10,15 @@ const COUNCIL_TIER_NFTS: u16 = 3;
 #[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, PartialEq, Debug)]
 pub struct Proposal<M: ManagedTypeApi> {
     pub proposal_id: ManagedBuffer<M>,
+    pub proposal_number: u16,
+    pub proposal_title: ManagedBuffer<M>,
     pub proposal_content: ManagedBuffer<M>,
     pub creation_timestamp: u64,
     pub deadline_timestamp: u64,
+
+    pub total_voting_power: u16,
+    pub total_yes: u16,
+    pub total_no: u16,
 }
 
 #[elrond_wasm::module]
@@ -21,6 +27,7 @@ pub trait Dao: crate::storage::Storage {
     #[only_owner]
     fn create_proposal(
         &self,
+        proposal_title: ManagedBuffer,
         proposal_content: ManagedBuffer,
         deadline_hours: u64,
     ) -> ManagedBuffer {
@@ -29,19 +36,8 @@ pub trait Dao: crate::storage::Storage {
         let creation_timestamp = self.blockchain().get_block_timestamp();
         let deadline_timestamp = creation_timestamp + deadline_hours * HOUR_IN_SECONDS;
 
-        let proposal = Proposal {
-            proposal_id: proposal_id.clone(),
-            proposal_content,
-            creation_timestamp,
-            deadline_timestamp,
-        };
-
-        //STORE THE PROPOSAL
-        self.proposal_by_id(&proposal_id).set(&proposal);
-        self.proposals().push(&proposal_id);
-
         //CALCULATE THE VOTING POWER
-        let mut voting_power_total = 0u16;
+        let mut total_voting_power = 0u16;
 
         //CALCULATE THE VOTING POWER FOR TASC
         for user in self.users_staked_second_collection().iter() {
@@ -62,7 +58,7 @@ pub trait Dao: crate::storage::Storage {
 
             self.voting_power(&proposal_id, &user)
                 .set(&user_voting_power);
-            voting_power_total += user_voting_power;
+            total_voting_power += user_voting_power;
         }
 
         //CALCULATE THE VOTING POWER FOR TACC
@@ -73,12 +69,29 @@ pub trait Dao: crate::storage::Storage {
             self.voting_power(&proposal_id, &user)
                 .update(|user_vp| *user_vp += user_voting_power);
 
-            voting_power_total += user_voting_power;
+            total_voting_power += user_voting_power;
         }
 
         //STORE THE VOTING POWER TOTAL
         self.voting_power_total(&proposal_id)
-            .set(&voting_power_total);
+            .set(&total_voting_power);
+
+        //CREATE THE PROPOSAL STRUCT
+        let proposal = Proposal {
+            proposal_id: proposal_id.clone(),
+            proposal_number: self.proposals().len() as u16 + 1,
+            proposal_title,
+            proposal_content,
+            creation_timestamp,
+            deadline_timestamp,
+            total_voting_power,
+            total_yes: 0,
+            total_no: 0,
+        };
+
+        //STORE THE PROPOSAL
+        self.proposal_by_id(&proposal_id).set(&proposal);
+        self.proposals().push(&proposal_id);
 
         //RETURN THE PROPOSAL ID
         proposal_id
@@ -87,7 +100,7 @@ pub trait Dao: crate::storage::Storage {
     #[endpoint(vote)]
     fn cast_vote(&self, proposal_id: ManagedBuffer, vote: u8) {
         // get proposal and check if it exists
-        let proposal = self.proposal_by_id(&proposal_id).get();
+        let mut proposal = self.proposal_by_id(&proposal_id).get();
         //require!(proposal.is_some(), "Proposal does not exist");
 
         // check if the vote is within the deadline
@@ -111,12 +124,11 @@ pub trait Dao: crate::storage::Storage {
             .update(|vp| *vp += voting_power_user);
         self.vote_total(&proposal_id, vote)
             .update(|vt| *vt += voting_power_user);
-    }
 
-    fn create_hash(&self) -> ManagedBuffer {
-        let mut rand_source = RandomnessSource::<Self::Api>::new();
-        let rand_hash = rand_source.next_bytes(8);
-        return rand_hash;
+        // update the proposal
+        proposal.total_yes = self.vote_total(&proposal_id, 1).get();
+        proposal.total_no = self.vote_total(&proposal_id, 2).get();
+        self.proposal_by_id(&proposal_id).set(&proposal);
     }
 
     #[view(getProposalById)]
@@ -155,4 +167,10 @@ pub trait Dao: crate::storage::Storage {
     #[view(getVoteTotal)]
     #[storage_mapper("voteTotal")]
     fn vote_total(&self, proposal_id: &ManagedBuffer, vote: u8) -> SingleValueMapper<u16>;
+
+    fn create_hash(&self) -> ManagedBuffer {
+        let mut rand_source = RandomnessSource::<Self::Api>::new();
+        let rand_hash = rand_source.next_bytes(8);
+        return rand_hash;
+    }
 }
