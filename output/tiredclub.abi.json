@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "tiredclub",
             "version": "1.0.0",
-            "git_version": "9331162-modified"
+            "git_version": "2478435-modified"
         },
         "framework": {
             "name": "elrond-wasm",
@@ -547,6 +547,16 @@
             ]
         },
         {
+            "name": "getNumberLegendaryStakedSecondCollection",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
             "name": "getUsersStakedSecondCollection",
             "mutability": "readonly",
             "inputs": [],
@@ -575,6 +585,21 @@
         },
         {
             "name": "getUserStakedOlympianSecondCollection",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "getUserStakedLegendarySecondCollection",
             "mutability": "readonly",
             "inputs": [
                 {

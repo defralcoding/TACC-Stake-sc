@@ -16,6 +16,7 @@ elrond_wasm_node::wasm_endpoints! {
         distributeToTacc
         distributeToTasc
         dnsRegister
+        getNumberLegendaryStakedSecondCollection
         getNumberOlympianStakedSecondCollection
         getNumberStakedFirstCollection
         getNumberStakedSecondCollection
@@ -24,6 +25,7 @@ elrond_wasm_node::wasm_endpoints! {
         getProposalById
         getProposals
         getUserStakedFirstCollection
+        getUserStakedLegendarySecondCollection
         getUserStakedOlympianSecondCollection
         getUserStakedSecondCollection
         getUserUnstakedFirstCollection

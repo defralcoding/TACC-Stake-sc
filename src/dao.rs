@@ -48,8 +48,9 @@ pub trait Dao: crate::storage::Storage {
             let n_olympians = self
                 .user_number_staked_olympian_second_collection(&user)
                 .get();
-            //TODO legendary
-            let n_legendaries = 0u32;
+            let n_legendaries = self
+                .user_number_staked_legendary_second_collection(&user)
+                .get();
             let n_council = n_olympians + n_legendaries;
             if n_council > 0 {
                 let council_voting_power = (n_council as u16 - 1) / COUNCIL_TIER_NFTS + 1;

@@ -77,8 +77,8 @@ getUserRewards() {
 
 
 getgenerico() {
-    mxpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
-    --function "teamAddresses" \
+    erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
+    --function "getGln"  \
     --proxy=${PROXY} || return
 }
 
@@ -104,7 +104,7 @@ test() {
     mxpy --verbose contract call erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt \
     --recall-nonce --pem=${USER_PEM} \
     --gas-limit=200000000 \
-    --function "setOlympian" \
+    --function "sl" \
     --send --outfile="deploy.interaction.json" \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
