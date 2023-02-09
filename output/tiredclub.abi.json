@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "tiredclub",
             "version": "1.0.0",
-            "git_version": "2478435-modified"
+            "git_version": "28cfc50-modified"
         },
         "framework": {
             "name": "elrond-wasm",
@@ -280,7 +280,62 @@
             ]
         },
         {
+            "name": "createProposalCouncil",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "proposal_title",
+                    "type": "bytes"
+                },
+                {
+                    "name": "proposal_content",
+                    "type": "bytes"
+                },
+                {
+                    "name": "deadline_hours",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "bytes"
+                }
+            ]
+        },
+        {
+            "name": "submitCouncilProposal",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                },
+                {
+                    "name": "deadline_hours",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
             "name": "vote",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                },
+                {
+                    "name": "vote",
+                    "type": "u8"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "voteCouncil",
             "mutability": "mutable",
             "inputs": [
                 {
@@ -310,6 +365,21 @@
             ]
         },
         {
+            "name": "getProposalByIdCouncil",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Proposal"
+                }
+            ]
+        },
+        {
             "name": "getProposals",
             "mutability": "readonly",
             "inputs": [],
@@ -321,7 +391,37 @@
             ]
         },
         {
+            "name": "getProposalsCouncil",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<bytes>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
             "name": "getVotingPowers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                },
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u16"
+                }
+            ]
+        },
+        {
+            "name": "getVotingPowersCouncil",
             "mutability": "readonly",
             "inputs": [
                 {
@@ -355,7 +455,37 @@
             ]
         },
         {
+            "name": "getVotingPowerTotalCouncil",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u16"
+                }
+            ]
+        },
+        {
             "name": "getVotedPower",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u16"
+                }
+            ]
+        },
+        {
+            "name": "getVotedPowerCouncil",
             "mutability": "readonly",
             "inputs": [
                 {
@@ -389,7 +519,45 @@
             ]
         },
         {
+            "name": "getUserVoteCouncil",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                },
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u8"
+                }
+            ]
+        },
+        {
             "name": "getVoteTotal",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "proposal_id",
+                    "type": "bytes"
+                },
+                {
+                    "name": "vote",
+                    "type": "u8"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u16"
+                }
+            ]
+        },
+        {
+            "name": "getVoteTotalCouncil",
             "mutability": "readonly",
             "inputs": [
                 {

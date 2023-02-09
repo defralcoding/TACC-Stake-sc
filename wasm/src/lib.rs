@@ -11,6 +11,7 @@ elrond_wasm_node::wasm_endpoints! {
         cancelUnstakeSecond
         claimRewards
         createProposal
+        createProposalCouncil
         distributeRoyaltiesFirstCollection
         distributeRoyaltiesSecondCollection
         distributeToTacc
@@ -23,7 +24,9 @@ elrond_wasm_node::wasm_endpoints! {
         getNumberUnstakedFirstCollection
         getNumberUnstakedSecondCollection
         getProposalById
+        getProposalByIdCouncil
         getProposals
+        getProposalsCouncil
         getUserStakedFirstCollection
         getUserStakedLegendarySecondCollection
         getUserStakedOlympianSecondCollection
@@ -31,12 +34,17 @@ elrond_wasm_node::wasm_endpoints! {
         getUserUnstakedFirstCollection
         getUserUnstakedSecondCollection
         getUserVote
+        getUserVoteCouncil
         getUsersStakedFirstCollection
         getUsersStakedSecondCollection
         getVoteTotal
+        getVoteTotalCouncil
         getVotedPower
+        getVotedPowerCouncil
         getVotingPowerTotal
+        getVotingPowerTotalCouncil
         getVotingPowers
+        getVotingPowersCouncil
         migrateWallet
         setTaccRoyaltiesSecondCollection
         setTascRoyaltiesSecondCollection
@@ -46,6 +54,7 @@ elrond_wasm_node::wasm_endpoints! {
         stakeMultipleFirst
         stakeMultipleSecond
         stakeSecond
+        submitCouncilProposal
         taccRoyaltiesSecondCollection
         tascRoyaltiesSecondCollection
         teamAddresses
@@ -54,6 +63,7 @@ elrond_wasm_node::wasm_endpoints! {
         unstakeSecond
         userRewards
         vote
+        voteCouncil
         withdrawFirst
         withdrawSecond
     )
