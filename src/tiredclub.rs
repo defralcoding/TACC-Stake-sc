@@ -353,17 +353,23 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
 
         //compound rewards
         self.user_compounded_rewards(&caller)
-            .update(|rewards| *rewards += rewards.clone());
+            .update(|r| *r += rewards.clone());
 
         //update total compound rewards
         self.total_compound_rewards()
-            .update(|rewards| *rewards += rewards.clone());
+            .update(|r| *r += rewards.clone());
 
         //send rewards if total compound rewards > 0.5 EGLD
-        if rewards.clone() > self.minimum_compound_to_send().get() {
+        let total_rewards = self.total_compound_rewards().get();
+        if total_rewards.clone() > self.minimum_compound_to_send().get() {
             let owner = self.blockchain().get_owner_address();
-            self.send()
-                .direct(&owner, &EgldOrEsdtTokenIdentifier::egld(), 0, &rewards);
+            self.send().direct(
+                &owner,
+                &EgldOrEsdtTokenIdentifier::egld(),
+                0,
+                &total_rewards,
+            );
+            self.total_compound_rewards().clear();
         }
     }
 

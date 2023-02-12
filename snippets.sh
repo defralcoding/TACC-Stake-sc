@@ -78,7 +78,7 @@ getUserRewards() {
 
 getgenerico() {
     erdpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
-    --function "getGln"  \
+    --function "totalCompoundRewards"   \
     --proxy=${PROXY} || return
 }
 
