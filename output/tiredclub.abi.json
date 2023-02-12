@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "tiredclub",
             "version": "1.0.0",
-            "git_version": "28cfc50-modified"
+            "git_version": "e5eab11-modified"
         },
         "framework": {
             "name": "elrond-wasm",
@@ -134,6 +134,24 @@
             "name": "claimRewards",
             "mutability": "mutable",
             "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "compoundRewards",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "setMinimumCompoundToSend",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "minimum_compound_to_send",
+                    "type": "BigUint"
+                }
+            ],
             "outputs": []
         },
         {
@@ -584,6 +602,41 @@
                     "type": "Address"
                 }
             ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "userCompoundedRewards",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "totalCompoundRewards",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "minimumCompoundToSend",
+            "mutability": "readonly",
+            "inputs": [],
             "outputs": [
                 {
                     "type": "BigUint"

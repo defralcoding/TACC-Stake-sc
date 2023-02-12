@@ -10,6 +10,7 @@ elrond_wasm_node::wasm_endpoints! {
         cancelUnstakeFirst
         cancelUnstakeSecond
         claimRewards
+        compoundRewards
         createProposal
         createProposalCouncil
         distributeRoyaltiesFirstCollection
@@ -46,6 +47,8 @@ elrond_wasm_node::wasm_endpoints! {
         getVotingPowers
         getVotingPowersCouncil
         migrateWallet
+        minimumCompoundToSend
+        setMinimumCompoundToSend
         setTaccRoyaltiesSecondCollection
         setTascRoyaltiesSecondCollection
         setTeamAddresses
@@ -59,8 +62,10 @@ elrond_wasm_node::wasm_endpoints! {
         tascRoyaltiesSecondCollection
         teamAddresses
         teamRoyaltiesSecondCollection
+        totalCompoundRewards
         unstakeFirst
         unstakeSecond
+        userCompoundedRewards
         userRewards
         vote
         voteCouncil

@@ -339,6 +339,41 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
             .direct(&caller, &EgldOrEsdtTokenIdentifier::egld(), 0, &rewards);
     }
 
+    #[endpoint(compoundRewards)]
+    fn compound_rewards(&self) {
+        //get rewards to claim
+        let caller = self.blockchain().get_caller();
+        let rewards = self.user_rewards(&caller).get();
+
+        //check if there are rewards to claim
+        require!(rewards.clone() > 0, "No rewards to claim");
+
+        //update storage
+        self.user_rewards(&caller).clear();
+
+        //compound rewards
+        self.user_compounded_rewards(&caller)
+            .update(|rewards| *rewards += rewards.clone());
+
+        //update total compound rewards
+        self.total_compound_rewards()
+            .update(|rewards| *rewards += rewards.clone());
+
+        //send rewards if total compound rewards > 0.5 EGLD
+        if rewards.clone() > self.minimum_compound_to_send().get() {
+            let owner = self.blockchain().get_owner_address();
+            self.send()
+                .direct(&owner, &EgldOrEsdtTokenIdentifier::egld(), 0, &rewards);
+        }
+    }
+
+    #[only_owner]
+    #[endpoint(setMinimumCompoundToSend)]
+    fn set_minimum_compound_to_send(&self, minimum_compound_to_send: BigUint) {
+        self.minimum_compound_to_send()
+            .set(&minimum_compound_to_send);
+    }
+
     #[only_owner]
     #[endpoint(setTeamAddresses)]
     fn set_team_addresses(

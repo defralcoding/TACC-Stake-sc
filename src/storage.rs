@@ -13,6 +13,18 @@ pub trait Storage {
     #[storage_mapper("userRewards")]
     fn user_rewards(&self, user: &ManagedAddress) -> SingleValueMapper<BigUint>;
 
+    #[view(userCompoundedRewards)]
+    #[storage_mapper("userCompoundedRewards")]
+    fn user_compounded_rewards(&self, user: &ManagedAddress) -> SingleValueMapper<BigUint>;
+
+    #[view(totalCompoundRewards)]
+    #[storage_mapper("totalCompoundRewards")]
+    fn total_compound_rewards(&self) -> SingleValueMapper<BigUint>;
+
+    #[view(minimumCompoundToSend)]
+    #[storage_mapper("minimumCompoundToSend")]
+    fn minimum_compound_to_send(&self) -> SingleValueMapper<BigUint>;
+
     #[view(teamAddresses)]
     #[storage_mapper("teamWallets")]
     fn team_addresses(&self) -> UnorderedSetMapper<TeamMember<Self::Api>>;
