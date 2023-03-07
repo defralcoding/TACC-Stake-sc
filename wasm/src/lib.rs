@@ -11,10 +11,12 @@ elrond_wasm_node::wasm_endpoints! {
         cancelUnstakeSecond
         claimRewards
         compoundRewards
+        compoundRewardsToSend
         createProposal
         createProposalCouncil
         distributeRoyaltiesFirstCollection
         distributeRoyaltiesSecondCollection
+        distributeTeamRewards
         distributeToTacc
         distributeToTasc
         dnsRegister
@@ -28,6 +30,7 @@ elrond_wasm_node::wasm_endpoints! {
         getProposalByIdCouncil
         getProposals
         getProposalsCouncil
+        getUserActualVotingPower
         getUserStakedFirstCollection
         getUserStakedLegendarySecondCollection
         getUserStakedOlympianSecondCollection
@@ -52,6 +55,7 @@ elrond_wasm_node::wasm_endpoints! {
         setTaccRoyaltiesSecondCollection
         setTascRoyaltiesSecondCollection
         setTeamAddresses
+        setTeamRewardsAddresses
         setTeamRoyaltiesSecondCollection
         stakeFirst
         stakeMultipleFirst
@@ -61,6 +65,7 @@ elrond_wasm_node::wasm_endpoints! {
         taccRoyaltiesSecondCollection
         tascRoyaltiesSecondCollection
         teamAddresses
+        teamRewardsAddresses
         teamRoyaltiesSecondCollection
         totalCompoundRewards
         unstakeFirst

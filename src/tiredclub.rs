@@ -358,9 +358,11 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
         //update total compound rewards
         self.total_compound_rewards()
             .update(|r| *r += rewards.clone());
+        self.compound_rewards_to_send()
+            .update(|r| *r += rewards.clone());
 
         //send rewards if total compound rewards > 0.5 EGLD
-        let total_rewards = self.total_compound_rewards().get();
+        let total_rewards = self.compound_rewards_to_send().get();
         if total_rewards.clone() > self.minimum_compound_to_send().get() {
             let owner = self.blockchain().get_owner_address();
             self.send().direct(
@@ -369,7 +371,19 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
                 0,
                 &total_rewards,
             );
-            self.total_compound_rewards().clear();
+            self.compound_rewards_to_send().clear();
+        }
+    }
+
+    #[payable("*")]
+    #[only_owner]
+    #[endpoint(distributeTeamRewards)]
+    fn distribute_team_rewards(&self, #[payment_amount] payment_amount: BigUint) {
+        for team_member in self.team_rewards_addresses().iter() {
+            let member_amount =
+                &payment_amount * &BigUint::from(team_member.percent) / &BigUint::from(1000u16);
+            self.user_rewards(&team_member.address)
+                .update(|rewards| *rewards += member_amount);
         }
     }
 
@@ -396,6 +410,25 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
                 percent: percent,
             };
             self.team_addresses().insert(team_member);
+        }
+    }
+
+    #[only_owner]
+    #[endpoint(setTeamRewardsAddresses)]
+    fn set_team_rewards_addresses(
+        &self,
+        team_addresses: MultiValueEncoded<MultiValue2<ManagedAddress, u16>>,
+    ) {
+        if self.team_rewards_addresses().len() > 0 {
+            self.team_rewards_addresses().clear();
+        }
+        for team_address in team_addresses {
+            let (address, percent) = team_address.into_tuple();
+            let team_member = TeamMember {
+                address: address,
+                percent: percent,
+            };
+            self.team_rewards_addresses().insert(team_member);
         }
     }
 

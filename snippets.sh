@@ -95,7 +95,7 @@ upgrade() {
 upgrade_mainnet() {
     mxpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h --project=${PROJECT} \
     --recall-nonce --pem="~/wallets/TiredClub.pem" \
-    --gas-limit=80000000 \
+    --gas-limit=130000000 \
     --send --outfile="deploy.interaction.json" \
     --proxy="https://gateway.elrond.com" --chain=1 || return
 }

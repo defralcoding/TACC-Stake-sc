@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "tiredclub",
             "version": "1.0.0",
-            "git_version": "ee65598-modified"
+            "git_version": "275013d-modified"
         },
         "framework": {
             "name": "elrond-wasm",
@@ -143,6 +143,16 @@
             "outputs": []
         },
         {
+            "name": "distributeTeamRewards",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
             "name": "setMinimumCompoundToSend",
             "onlyOwner": true,
             "mutability": "mutable",
@@ -156,6 +166,19 @@
         },
         {
             "name": "setTeamAddresses",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "team_addresses",
+                    "type": "variadic<multi<Address,u16>>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setTeamRewardsAddresses",
             "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
@@ -366,6 +389,21 @@
                 }
             ],
             "outputs": []
+        },
+        {
+            "name": "getUserActualVotingPower",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u16"
+                }
+            ]
         },
         {
             "name": "getProposalById",
@@ -634,6 +672,16 @@
             ]
         },
         {
+            "name": "compoundRewardsToSend",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
             "name": "minimumCompoundToSend",
             "mutability": "readonly",
             "inputs": [],
@@ -661,6 +709,17 @@
             "outputs": [
                 {
                     "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "teamRewardsAddresses",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<TeamMember>",
+                    "multi_result": true
                 }
             ]
         },

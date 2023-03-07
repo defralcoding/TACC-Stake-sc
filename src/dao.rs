@@ -170,37 +170,10 @@ pub trait Dao: crate::storage::Storage {
         //CALCULATE THE VOTING POWER
         let mut total_voting_power = 0u16;
 
-        //CALCULATE THE VOTING POWER FOR TASC
         for user in self.users_staked_second_collection().iter() {
-            let user_staked = self.user_staked_second_collection(&user);
-            let mut user_voting_power = user_staked.len() as u16 / TASC_TIER_NFTS + 1;
-
-            //CALCULATE COUNCIL VOTING POWER
-            let n_olympians = self
-                .user_number_staked_olympian_second_collection(&user)
-                .get();
-            let n_legendaries = self
-                .user_number_staked_legendary_second_collection(&user)
-                .get();
-            let n_council = n_olympians + n_legendaries;
-            if n_council > 0 {
-                let council_voting_power = (n_council as u16 - 1) / COUNCIL_TIER_NFTS + 1;
-                user_voting_power += council_voting_power;
-            }
-
+            let user_voting_power = self.get_user_actual_voting_power(&user);
             self.voting_power(&proposal_id, &user)
                 .set(&user_voting_power);
-            total_voting_power += user_voting_power;
-        }
-
-        //CALCULATE THE VOTING POWER FOR TACC
-        for user in self.users_staked_first_collection().iter() {
-            let user_staked = self.user_staked_first_collection(&user);
-            let user_voting_power = user_staked.len() as u16 / TACC_TIER_NFTS + 1;
-
-            self.voting_power(&proposal_id, &user)
-                .update(|user_vp| *user_vp += user_voting_power);
-
             total_voting_power += user_voting_power;
         }
 
@@ -286,6 +259,34 @@ pub trait Dao: crate::storage::Storage {
         proposal.total_yes = self.vote_total_council(&proposal_id, 1).get();
         proposal.total_no = self.vote_total_council(&proposal_id, 2).get();
         self.proposal_by_id_council(&proposal_id).set(&proposal);
+    }
+
+    #[view(getUserActualVotingPower)]
+    fn get_user_actual_voting_power(&self, user: &ManagedAddress) -> u16 {
+        //CALCULATE THE VOTING POWER FOR TASC
+        let user_staked_second = self.user_staked_second_collection(&user);
+        let mut user_voting_power = user_staked_second.len() as u16 / TASC_TIER_NFTS + 1;
+
+        //CALCULATE COUNCIL VOTING POWER
+        let n_olympians = self
+            .user_number_staked_olympian_second_collection(&user)
+            .get();
+        let n_legendaries = self
+            .user_number_staked_legendary_second_collection(&user)
+            .get();
+        let n_council = n_olympians + n_legendaries;
+        if n_council > 0 {
+            let council_voting_power = (n_council as u16 - 1) / COUNCIL_TIER_NFTS + 1;
+            user_voting_power += council_voting_power;
+        }
+
+        //CALCULATE THE VOTING POWER FOR TACC
+        let user_staked_first = self.user_staked_first_collection(&user);
+        if (user_staked_first.len() as u16) > 0 {
+            user_voting_power += user_staked_first.len() as u16 / TACC_TIER_NFTS + 1;
+        }
+
+        user_voting_power
     }
 
     /*

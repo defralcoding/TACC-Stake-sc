@@ -21,6 +21,10 @@ pub trait Storage {
     #[storage_mapper("totalCompoundRewards")]
     fn total_compound_rewards(&self) -> SingleValueMapper<BigUint>;
 
+    #[view(compoundRewardsToSend)]
+    #[storage_mapper("compoundRewardsToSend")]
+    fn compound_rewards_to_send(&self) -> SingleValueMapper<BigUint>;
+
     #[view(minimumCompoundToSend)]
     #[storage_mapper("minimumCompoundToSend")]
     fn minimum_compound_to_send(&self) -> SingleValueMapper<BigUint>;
@@ -32,6 +36,10 @@ pub trait Storage {
     #[view(teamRoyaltiesSecondCollection)]
     #[storage_mapper("teamRoyaltiesSecondCollection")]
     fn team_royalties_second_collection(&self) -> SingleValueMapper<u8>;
+
+    #[view(teamRewardsAddresses)]
+    #[storage_mapper("teamRewardsAddresses")]
+    fn team_rewards_addresses(&self) -> UnorderedSetMapper<TeamMember<Self::Api>>;
 
     /*
      ***** TACC *****
