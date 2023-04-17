@@ -10,7 +10,7 @@
         "contractCrate": {
             "name": "tiredclub",
             "version": "1.0.0",
-            "git_version": "275013d-modified"
+            "git_version": "04af089-modified"
         },
         "framework": {
             "name": "elrond-wasm",

@@ -56,14 +56,14 @@ getNumberStakedSecondCollection() {
 }
 
 getUsersStaked() {
-    mxpy --verbose contract query erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt \
-    --function "getUsersStakedFirstCollection" \
+    mxpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
+    --function "getUsersStakedSecondCollection" \
     --proxy=${PROXY} || return
 }
 
 getUserStaked() {
     mxpy --verbose contract query erd1qqqqqqqqqqqqqpgqwjv6ru86mmlgvad54alm62xay0st5n5f4yuqdky79h \
-    --function "getUserUnstakedSecondCollection" --arguments erd1qjlu8anps2hhhw2p0wyfuaawa63awgl6pzuh6fh8tkj7x7cf34ystznqxd \
+    --function "getUserStakedSecondCollection" --arguments erd1amfzrx9699pln0p8qxrt9v0p20duvz68u7hc8u2v9xc79zyhahsqkf7c9j \
     --proxy=${PROXY} || return
 }
 

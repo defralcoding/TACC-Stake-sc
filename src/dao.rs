@@ -265,6 +265,11 @@ pub trait Dao: crate::storage::Storage {
     fn get_user_actual_voting_power(&self, user: &ManagedAddress) -> u16 {
         //CALCULATE THE VOTING POWER FOR TASC
         let user_staked_second = self.user_staked_second_collection(&user);
+        if user_staked_second.len() == 0 {
+            //user must have staked at least one TASC
+            return 0;
+        }
+
         let mut user_voting_power = user_staked_second.len() as u16 / TASC_TIER_NFTS + 1;
 
         //CALCULATE COUNCIL VOTING POWER
