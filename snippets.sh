@@ -1,5 +1,5 @@
 USER_PEM="~/wallets/development.pem"
-PROXY="https://gateway.elrond.com"
+PROXY="https://gateway.multiversx.com"
 CHAIN_ID="1"
 
 deploy() {
@@ -97,7 +97,7 @@ upgrade_mainnet() {
     --recall-nonce --pem="~/wallets/TiredClub.pem" \
     --gas-limit=130000000 \
     --send --outfile="deploy.interaction.json" \
-    --proxy="https://gateway.elrond.com" --chain=1 || return
+    --proxy="https://gateway.multiversx.com" --chain=1 || return
 }
 
 test() {
@@ -116,6 +116,6 @@ test_mainnet() {
     --gas-limit=150000000 \
     --value 2000000000000000000 --function "distributeRoyaltiesSecondCollection" \
     --simulate --outfile="deploy.interaction.json" \
-    --proxy="https://gateway.elrond.com" --chain=1 || return
+    --proxy="https://gateway.multiversx.com" --chain=1 || return
 }
 
