@@ -277,6 +277,20 @@ pub trait TiredClub: elrond_wasm_modules::dns::DnsModule + dao::Dao + storage::S
         self.distribute_to_tasc_stakers(&payment_amount);
     }
 
+    #[payable("EGLD")]
+    #[endpoint(distributeRewards)]
+    #[only_owner]
+    fn distribute_rewards(&self, #[payment_amount] payment_amount: BigUint) {
+        let team_amount = &payment_amount * &BigUint::from(2u8) / &BigUint::from(100u8);
+        let project_amount = &payment_amount * &BigUint::from(8u8) / &BigUint::from(100u8);
+        let tasc_amount = &payment_amount - &team_amount - &project_amount;
+
+        self.distribute_to_tasc_stakers(&tasc_amount);
+        self.distribute_to_team(&team_amount);
+        self.user_rewards(&self.blockchain().get_owner_address())
+            .update(|rewards| *rewards += project_amount);
+    }
+
     fn distribute_to_team(&self, amount: &BigUint) {
         for team_member in self.team_addresses().iter() {
             let member_amount =

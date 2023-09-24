@@ -87,7 +87,7 @@ getgenerico() {
 upgrade() {
     mxpy --verbose contract upgrade erd1qqqqqqqqqqqqqpgqtjt0puryxc4c68qhf9v387j379phnwrm4jwspypwnt --project=${PROJECT} \
     --recall-nonce --pem=${USER_PEM} \
-    --gas-limit=80000000 \
+    --gas-limit=130000000 \
     --send --outfile="deploy.interaction.json" \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }

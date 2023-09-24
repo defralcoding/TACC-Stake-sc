@@ -14,6 +14,7 @@ elrond_wasm_node::wasm_endpoints! {
         compoundRewardsToSend
         createProposal
         createProposalCouncil
+        distributeRewards
         distributeRoyaltiesFirstCollection
         distributeRoyaltiesSecondCollection
         distributeTeamRewards
